@@ -4,3 +4,5 @@ numpy
 scikit-learn
 jupyter
 fastapi
+httpx
+beautifulsoup4
