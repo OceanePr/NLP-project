@@ -1,3 +1,21 @@
+import pandas as pd
+import spacy
+from api_chatbot.vocabulaires import (
+    liste_vocab_medical,
+    liste_vocab_police,
+    liste_vocab_douche,
+    liste_vocab_maraude,
+)
+from fastapi import FastAPI
+from spacy.pipeline import EntityRuler
+from pydantic import BaseModel
+import httpx  # async HTTP client : on l'utilise à la place de request pour sa propriété asynchrone (= possibilité de gérer plusieurs requêtes en même temps)
+import asyncio
+import requests
+from bs4 import BeautifulSoup
+
+
+
 # Chargement du modèle français de spaCy
 
 nlp = spacy.load("fr_core_news_sm")  
@@ -5,15 +23,22 @@ nlp = spacy.load("fr_core_news_sm")
 # Etant dans un notebook Jupyter, je ne peux pas utiliser un input() pour le moment. Il faudra attendre de transférer le code dans un fichier python .py
 # received_text = input(Bonjour ! Que puis-je faire pour vous ?")
 
-received_text = "Je cherche les horaires d’une maraude dans Paris, si possible près de rue de Robin."
-print ("vous : ", received_text)
+#received_text = "Je cherche les horaires d’une maraude dans Paris, si possible près de rue de Robin."
+#print ("vous : ", received_text)
+
+app_chatbot = FastAPI()
+
+# Requête du client
+class ChatRequest(BaseModel):
+    message: str
+
+# Réponse du bot
+class ChatResponse(BaseModel):
+    response: str
+
 
 # Je veux que "Rue de Robin" soit reconnu comme une localisation. Actuellement "Robin" est détecté comme étant une personne.
 # On utilise donc le composant de spaCy nommé EntityRuler por spécifier et prioriser des règles d'entités.
-from fastapi import FastAPI
-from spacy.pipeline import EntityRuler
-
-app_chatbot = FastAPI()
 
 ruler = nlp.add_pipe("entity_ruler", before="ner")
  # On crée les patterns à identifier comme étant une localisation. 
@@ -37,13 +62,29 @@ ruler.add_patterns(patterns)
 
 
 
-@app_chatbot.post("/user/")
-def user_text(text: str):
- 
- spacy_doc = nlp(received_text)
+@app_chatbot.post("/chat", response_model = ChatResponse)
+async def user_text(chat: ChatRequest):
+  
+ user_msg = chat.message
+ spacy_doc = nlp(user_msg)
 
  for token in spacy_doc : 
     print(f"{token.text.lower()} → lemma: {token.lemma_.lower()}, POS: {token.pos_}")
+
+ # ---------------A VERIFIER et A CORRIGER -------------------------
+
+    if token.lemma_.lower() in liste_vocab_maraude:
+         return {"theme": "médical"}
+    elif token.lemma_.lower() in liste_vocab_douche:
+         return {"theme": "police"}
+    elif token.lemma_.lower() in liste_vocab_medical:
+         return {"theme": "douche"}
+    elif token.lemma_.lower() in liste_vocab_police:
+         return {"theme": "maraude"}
+    else:
+         return {"theme": "inconnu"}
+
+# -------------------------------------------------------------------
     
  for ent in spacy_doc.ents:
     print(f"{ent.text} → label: {ent.label_}")
@@ -56,6 +97,11 @@ def user_text(text: str):
     if not token.is_stop and not token.is_punct
 ])
  print("Texte nettoyé :", clean_text)
+
+
+
+
+
 
  # En attendant d'avoir réalisé l'algorithme de machine learning permettant de classer le texte de l'utilisateur comme étant "santé", 
  # "judiciaire", "maraude" ou "douche", on simule un sujet = "santé" pour la suite du text.

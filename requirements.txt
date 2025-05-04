@@ -6,3 +6,5 @@ jupyter
 fastapi
 httpx
 beautifulsoup4
+selenium
+webdriver-manager
