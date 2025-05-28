@@ -117,4 +117,4 @@ lemmes_vocab_police = [
 
 lemmes_vocab_douche = ['douche', 'laver', 'nettoyer']
 
-lemmes_vocab_maraude = ['aliment', 'association', 'distribution', 'manger', 'nourriture']
+lemmes_vocab_maraude = ['aliment', 'association', 'distribution', 'manger', 'nourriture', "repas"]

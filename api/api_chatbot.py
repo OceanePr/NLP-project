@@ -1,10 +1,11 @@
 import pandas as pd
 import spacy
-from api.api_chatbot.vocabulaires import (
-    liste_vocab_medical,
-    liste_vocab_police,
-    liste_vocab_douche,
-    liste_vocab_maraude,
+import re 
+from api.vocabulaires import (
+    lemmes_vocab_medical,
+    lemmes_vocab_police,
+    lemmes_vocab_douche,
+    lemmes_vocab_maraude,
 )
 from fastapi import FastAPI
 from spacy.pipeline import EntityRuler
@@ -91,53 +92,59 @@ ruler.add_patterns(patterns)
 
 @app_chatbot.post("/chat", response_model = ChatResponse)
 async def user_text(chat: ChatRequest):
-   user_msg = chat.message
-   spacy_doc = nlp(user_msg)
-   
-   # Intent classification
-   intent, api_method = classify_intent(user_msg)
+    user_msg = chat.message
+    spacy_doc = nlp(user_msg)
 
-   detected_theme = "inconnu"
-   for token in spacy_doc : 
-      print(f"{token.text.lower()} → lemma: {token.lemma_.lower()}, POS: {token.pos_}")
+    print(spacy_doc)
+    # Intent classification
+    intent, api_method = classify_intent(user_msg)
+    print(intent, api_method)
+
+    detected_theme = "inconnu"
+    for token in spacy_doc : 
+        print(f"{token.text.lower()} → lemma: {token.lemma_.lower()}, POS: {token.pos_}")
 
  # ---------------A VERIFIER et A CORRIGER -------------------------
-      lemma = token.lemma_.lower()
+        lemma = token.lemma_.lower()
+        print(lemma)
+        if lemma in lemmes_vocab_maraude:
+            detected_theme = "maraude" #{"theme": "médical"}
+            break
+        elif lemma in lemmes_vocab_douche:
+            detected_theme = "douche"#{"theme": "police"}
+            break
+        elif lemma in lemmes_vocab_medical:
+            detected_theme = "médical"#{"theme": "douche"}
+            break
+        elif lemma in lemmes_vocab_police:
+            detected_theme = "police"#{"theme": "maraude"}
+            break
+        else:
+            detected_theme = "inconnu"#{"theme": "inconnu"}
 
-      if lemma in liste_vocab_maraude:
-         detected_theme = "médical" #{"theme": "médical"}
-         
-         break
-      elif lemma in liste_vocab_douche:
-         detected_theme = "police"#{"theme": "police"}
-         break
-      elif lemma in liste_vocab_medical:
-         detected_theme = "douche"#{"theme": "douche"}
-         break
-      elif lemma in liste_vocab_police:
-         detected_theme = "maraude"#{"theme": "maraude"}
-         break
-      else:
-         detected_theme = "inconnu"#{"theme": "inconnu"}
-         break
       
-      print(f"Thème détecté: {detected_theme}")
+    print(f"Thème détecté: {detected_theme}")
 
 # -------------------------------------------------------------------
-   lieux = []
-   detected_borough = None
-   for ent in spacy_doc.ents:
-      if ent.label_ in ["GPE", "LOC", "FAC"]:
-         lieux.append(ent.text)
-         
-      # Tentative d'extraction de l'arrondissement
-      if ent.label_ == "BOROUGH":
-         # Utilise une regex pour extraire le numéro (ex: "13" de "13e arrondissement")
-         match = re.search(r"(\d{1,2}(?:e|er|ème)?)", ent.text, re.IGNORECASE)
-         if match:
-            detected_borough = re.split(r'(\d+|\D+)', match)[0]
-   print("LIEUX DÉTECTÉS :", lieux)
-   print("ARRONDISSEMENT DÉTECTÉ :", detected_borough)
+    lieux = []
+    detected_borough = None
+    for ent in spacy_doc.ents:
+        if ent.label_ in ["GPE", "LOC", "FAC", "BOROUGH"]:
+            lieux.append(ent.text)
+            
+        # Tentative d'extraction de l'arrondissement
+        if ent.label_ == "BOROUGH":
+            # Utilise une regex pour extraire le numéro (ex: "13" de "13e arrondissement")
+            match = re.search(r"(\d{1,2}(?:e|er|ème)?)", ent.text, re.IGNORECASE)
+            print(ent.text)
+            if match:
+                numbers_as_strings = re.findall(r'\d+', ent.text)
+
+                # Convert the found strings to integers
+                detected_borough = [int(num_str) for num_str in numbers_as_strings][0]
+
+    print("LIEUX DÉTECTÉS :", lieux)
+    print("ARRONDISSEMENT DÉTECTÉ :", detected_borough)
 
 
 
@@ -149,21 +156,23 @@ async def user_text(chat: ChatRequest):
    # ])
    # print("Texte nettoyé :", clean_text)
 
-   if detected_theme == "maraude": 
-      api_url = f"{FLASK_API_BASE_URL}/distributions/borough/{detected_borough}"
-      try:
-         async with httpx.AsyncClient() as client:
-               flask_response = await client.get(api_url)
-               flask_response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
-               
-               distributions_data = flask_response.json()
-      except Exception as e:
-         response_message = f"Une erreur inattendue est survenue: {e}"
-         print(f"Erreur inattendue: {e}")     
-   else :
-      print("test")
+    if detected_theme == "maraude": 
+        api_url = f"{FLASK_API_BASE_URL}/distributions/borough/{detected_borough}"
+        try:
+            async with httpx.AsyncClient() as client:
+                flask_response = await client.get(api_url)
+                flask_response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
+                
+                distributions_data = flask_response.json()
+                response_message = str(distributions_data)
+        except Exception as e:
+            response_message = f"Une erreur inattendue est survenue: {e}"
+            print(f"Erreur inattendue: {e}")     
+    else :
+        print("test")
+        response_message = "Test"
 
-   return ChatResponse(response=response_message)
+    return ChatResponse(response=response_message)
 
 
 
