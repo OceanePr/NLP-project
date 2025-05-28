@@ -23,4 +23,7 @@ numpy
 scikit-learn
 jupyter
 fastapi
-fastapi uvicorn
+httpx
+beautifulsoup4
+selenium
+webdriver-manager
