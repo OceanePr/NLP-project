@@ -23,16 +23,20 @@ def classify_intent(message: str):
     message = message.lower()
 
     if re.search(r"\b(supprimer|annuler|retirer)\b", message):
-        return "delete_distribution", "DELETE"
+        return "DELETE"
     elif re.search(r"\b(ajouter|enregistrer|créer)\b", message):
-        return "add_distribution", "POST"
+        return "POST"
     elif re.search(r"\b(modifier|changer|mettre à jour)\b", message):
-        return "update_distribution", "PUT"
+        return "PUT"
     elif re.search(r"\b(y a-t-il|où|quand|est-ce qu'il y a|je cherche|existe|besoin)\b", message):
-        return "find_distributions", "GET"
+        return "GET"
     else:
         return "unknown", None
 
+# Function to make a sentence from a dict corresponding to a document in the distribution collection
+def make_sentence_for_distribution(dct_distrib): 
+    sentence = f"- Le {dct_distrib["Jour"]} à l'adresse : {dct_distrib["Adresse"]}, {dct_distrib["Code Postal"]}, aux horaires suivants : {dct_distrib["Horaires"]}, au nom de : {dct_distrib["Organisation"]} "
+    return sentence 
 # Chargement du modèle français de spaCy
 
 nlp = spacy.load("fr_core_news_sm")  
@@ -97,8 +101,8 @@ async def user_text(chat: ChatRequest):
 
     print(spacy_doc)
     # Intent classification
-    intent, api_method = classify_intent(user_msg)
-    print(intent, api_method)
+    api_method = classify_intent(user_msg)
+    print(api_method)
 
     detected_theme = "inconnu"
     for token in spacy_doc : 
@@ -155,22 +159,49 @@ async def user_text(chat: ChatRequest):
    #    if not token.is_stop and not token.is_punct
    # ])
    # print("Texte nettoyé :", clean_text)
-
-    if detected_theme == "maraude": 
-        api_url = f"{FLASK_API_BASE_URL}/distributions/borough/{detected_borough}"
-        try:
-            async with httpx.AsyncClient() as client:
-                flask_response = await client.get(api_url)
-                flask_response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
-                
-                distributions_data = flask_response.json()
-                response_message = str(distributions_data)
-        except Exception as e:
-            response_message = f"Une erreur inattendue est survenue: {e}"
-            print(f"Erreur inattendue: {e}")     
-    else :
-        print("test")
-        response_message = "Test"
+    if not detected_borough and api_method == "GET": 
+        response_message = "Je n'ai pas réussi à trouver dans quel arrondissement de Paris vous souhaitez effectuer votre recherche, pourriez-vous me le préciser s'il vous plaît ? "
+        
+    else : 
+        if detected_theme == "maraude": 
+            if api_method == "GET" :
+                api_url = f"{FLASK_API_BASE_URL}/distributions/borough/{detected_borough}"
+                try:
+                    async with httpx.AsyncClient() as client:
+                        flask_response = await client.get(api_url)
+                        flask_response.raise_for_status()
+                        
+                        distributions_data = flask_response.json()
+                        # Formater les différentes ditributions toruvées correspondant à la demande initiale
+                        sentences = [make_sentence_for_distribution(distrib) for distrib in distributions_data]
+                        final_sentence = "\n".join(sentences)
+                        message = f"Voici les distributions de repas organisées dans l'arrondissement n°{detected_borough}: \n" + final_sentence
+                        response_message = message
+                except Exception as e:
+                    response_message = f"Une erreur inattendue est survenue: {e}"
+                    print(f"Erreur inattendue: {e}")
+        if detected_theme == "maraude": 
+            ###### Remplacer par le chemin créé pour la route correspondante ############
+            api_url = f"{FLASK_API_BASE_URL}/distributions/borough/{detected_borough}"
+            #################################################################
+            try:
+                async with httpx.AsyncClient() as client:
+                    flask_response = await client.get(api_url)
+                    flask_response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
+                    
+                    distributions_data = flask_response.json()
+                    print(distributions_data)
+                    sentences = [make_sentence_for_distribution(distrib) for distrib in distributions_data]
+                    final_sentence = "\n".join(sentences)
+                    message = f"Voici les douches publiques dans l'arrondissement n°{detected_borough}: \n" + final_sentence
+                    response_message = message
+            except Exception as e:
+                response_message = f"Une erreur inattendue est survenue: {e}"
+                print(f"Erreur inattendue: {e}")
+            
+        else :
+            print("test")
+            response_message = "Test"
 
     return ChatResponse(response=response_message)
 
