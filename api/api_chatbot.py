@@ -14,6 +14,11 @@ import httpx  # async HTTP client : on l'utilise à la place de request pour sa 
 import asyncio
 import requests
 from bs4 import BeautifulSoup
+import uuid
+import csv
+from datetime import datetime
+import os
+import json
 
 
 # URL de votre API Flask
@@ -35,17 +40,13 @@ def classify_intent(message: str):
 
 # Function to make a sentence from a dict corresponding to a document in the distribution collection
 def make_sentence_for_distribution(dct_distrib): 
-    sentence = f"- Le {dct_distrib["Jour"]} à l'adresse : {dct_distrib["Adresse"]}, {dct_distrib["Code Postal"]}, aux horaires suivants : {dct_distrib["Horaires"]}, au nom de : {dct_distrib["Organisation"]} "
+    sentence = f"- Le {dct_distrib['Jour']} à l'adresse : {dct_distrib['Adresse']}, {dct_distrib['Code Postal']}, aux horaires suivants : {dct_distrib['Horaires']}, au nom de : {dct_distrib['Organisation']}"
     return sentence 
+
+
 # Chargement du modèle français de spaCy
 
 nlp = spacy.load("fr_core_news_sm")  
-
-# Etant dans un notebook Jupyter, je ne peux pas utiliser un input() pour le moment. Il faudra attendre de transférer le code dans un fichier python .py
-# received_text = input(Bonjour ! Que puis-je faire pour vous ?")
-
-#received_text = "Je cherche les horaires d’une maraude dans Paris, si possible près de rue de Robin."
-#print ("vous : ", received_text)
 
 app_chatbot = FastAPI(
     title="Chatbot API pour Infrastructures contre la précarité",
@@ -96,6 +97,26 @@ ruler.add_patterns(patterns)
 
 @app_chatbot.post("/chat", response_model = ChatResponse)
 async def user_text(chat: ChatRequest):
+
+    awaiting_file = "data/awaiting_days.json"
+    days_keywords = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+
+    if os.path.exists(awaiting_file):
+        with open(awaiting_file, "r", encoding="utf-8") as f:
+            awaiting_info = json.load(f)
+
+        if awaiting_info.get("waiting"):
+            user_days = [day.capitalize() for day in days_keywords if day in chat.message.lower()]
+            if user_days:
+                csv_path = "data/utilisateur_maraude_feedback.csv"
+                df = pd.read_csv(csv_path)
+                idx = df[df["uuid"] == awaiting_info["uuid"]].index
+                if not idx.empty:
+                    df.loc[idx[0], "user_days"] = ", ".join(user_days)
+                    df.to_csv(csv_path, index=False)
+                os.remove(awaiting_file)
+                return ChatResponse(response=f"Merci, nous avons bien noté que vous vous rendez aux maraudes les jours suivants : {', '.join(user_days)}")
+
     user_msg = chat.message
     spacy_doc = nlp(user_msg)
 
@@ -160,10 +181,13 @@ async def user_text(chat: ChatRequest):
    #    if not token.is_stop and not token.is_punct
    # ])
    # print("Texte nettoyé :", clean_text)
+
+  
     if not detected_borough and api_method == "GET": 
         response_message = "Je n'ai pas réussi à trouver dans quel arrondissement de Paris vous souhaitez effectuer votre recherche, pourriez-vous me le préciser s'il vous plaît ? "
         
     else : 
+ ########### Subject = "maraude" // requête GET ###################
         if detected_theme == "maraude": 
             if api_method == "GET" :
                 api_url = f"{FLASK_API_BASE_URL}/distributions/borough/{detected_borough}"
@@ -178,58 +202,124 @@ async def user_text(chat: ChatRequest):
                         final_sentence = "\n".join(sentences)
                         message = f"Voici les distributions de repas organisées dans l'arrondissement n°{detected_borough}: \n" + final_sentence
                         response_message = message
+                        response_message += "\nAfin d'aider les associations à organiser leurs stocks, pourriez-vous nous dire s'il y a un ou plusieurs jours de la semaine où vous vous rendez généralement aux maraudes dans cet arrondissement ?"
+
+                        feedback_file = "data/utilisateur_maraude_feedback.csv"
+                        feedback_entry = {
+                            "uuid": str(uuid.uuid4()),
+                            "datetime": datetime.now().isoformat(),
+                            "borough": detected_borough,
+                            "theme": detected_theme,
+                            "message": user_msg
+                        }
+
+                        file_exists = os.path.isfile(feedback_file)
+                        with open(feedback_file, mode="a", newline="", encoding="utf-8") as f:
+                            writer = csv.DictWriter(f, fieldnames=feedback_entry.keys())
+                            if not file_exists:
+                                writer.writeheader()
+                            writer.writerow(feedback_entry)
+                        
+                        with open("data/awaiting_days.json", "w", encoding="utf-8") as f:
+                            json.dump({"waiting": True, "uuid": feedback_entry["uuid"]}, f, ensure_ascii=False)
+
+
                 except Exception as e:
                     response_message = f"Une erreur inattendue est survenue: {e}"
                     print(f"Erreur inattendue: {e}")
-        if detected_theme == "maraude": 
-            ###### Remplacer par le chemin créé pour la route correspondante ############
-            api_url = f"{FLASK_API_BASE_URL}/distributions/borough/{detected_borough}"
-            #################################################################
+
+
+ ########### Subject = "maraude" // requête POST ################### Gros doute sur l'utilité ici vu qu'on a un formulaire dédié. Il faudrait que le chatbot donne directement
+ # l'url http://127.0.0.1:5000/add_distribution pour que l'utilisateur soit renvoyé vers le formulaire
+
+    #          if api_method == "POST" :
+     #           api_url = f"{FLASK_API_BASE_URL}/add_distribution"
+
+                # sans le formulaire, on devrait mettre un payload contenant les données récupérées via NLP.
+
+      #          try:
+       #             async with httpx.AsyncClient() as client:
+        #                flask_response = await client.post(api_url, data = payload)
+         #               flask_response.raise_for_status()
+                        
+          #              distributions_data = flask_response # la réponse attendue est un formulaire html donc pas de json
+           #             message = "La distribution a bien été ajoutée dans la base de données"
+            #            response_message = message
+             #   except Exception as e:
+              #      response_message = f"Une erreur inattendue est survenue lors de l'ajout : {e}"
+               #     print(f"Erreur inattendue: {e}")
+
+
+######### Subject = "Police station" // requête GET ############
+
+        elif detected_theme == "police": 
+            api_url = f"{FLASK_API_BASE_URL}/police_stations/borough/{detected_borough}"
+        
             try:
                 async with httpx.AsyncClient() as client:
                     flask_response = await client.get(api_url)
                     flask_response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
                     
-                    distributions_data = flask_response.json()
-                    print(distributions_data)
-                    sentences = [make_sentence_for_distribution(distrib) for distrib in distributions_data]
+                    police_station_data = flask_response.json()
+                    print(police_station_data)
+                    sentences = [make_sentence_for_distribution(police) for police in police_station_data]
+                    final_sentence = "\n".join(sentences)
+                    message = f"Voici les établissements judiciaires dans l'arrondissement n°{detected_borough}: \n" + final_sentence
+                    response_message = message
+            except Exception as e:
+                response_message = f"Une erreur inattendue est survenue: {e}"
+                print(f"Erreur inattendue: {e}")
+        
+          
+        
+######### Subject = "Douche" // requête GET ############
+
+        elif detected_theme == "douche": 
+            api_url = f"{FLASK_API_BASE_URL}/public_showers/borough/{detected_borough}"
+        
+            try:
+                async with httpx.AsyncClient() as client:
+                    flask_response = await client.get(api_url)
+                    flask_response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
+                    
+                    public_shower_data = flask_response.json()
+                    print(public_shower_data)
+                    sentences = [make_sentence_for_distribution(shower) for shower in public_shower_data]
                     final_sentence = "\n".join(sentences)
                     message = f"Voici les douches publiques dans l'arrondissement n°{detected_borough}: \n" + final_sentence
                     response_message = message
             except Exception as e:
                 response_message = f"Une erreur inattendue est survenue: {e}"
                 print(f"Erreur inattendue: {e}")
-            
+        
+          
+        
+######### Subject = "Hôpitaux" // requête GET ############
+
+        elif detected_theme == "médical": 
+            api_url = f"{FLASK_API_BASE_URL}/hospitals/borough/{detected_borough}"
+        
+            try:
+                async with httpx.AsyncClient() as client:
+                    flask_response = await client.get(api_url)
+                    flask_response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
+                    
+                    hospital_data = flask_response.json()
+                    print(hospital_data)
+                    sentences = [make_sentence_for_distribution(hospital) for hospital in hospital_data]
+                    final_sentence = "\n".join(sentences)
+                    message = f"Voici les hôpitaux dans l'arrondissement n°{detected_borough}: \n" + final_sentence
+                    response_message = message
+            except Exception as e:
+                response_message = f"Une erreur inattendue est survenue: {e}"
+                print(f"Erreur inattendue: {e}")
+        
+          
         else :
-            print("test")
-            response_message = "Test"
+            print("Le sujet n'a pas été reconnu parmi police, douche, maraude et hôpital")
+            response_message = "Nous n'avons pas reconnu l'un des quatre sujets que nous couvrons : les douches publiques, les hôpitaux, les commissariats et les maraudes"
 
-    if detected_theme == "maraude": 
-        # --- EXTRACTION DES JOURS ---
-        days_keywords = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-        detected_days = [day.capitalize() for day in days_keywords if day in user_msg.lower()]
-
-        # Case 1 : missing day and borough
-        if not detected_borough and not detected_days:
-            response_message = "Pouvez-vous préciser l'arrondissement ainsi que le ou les jours qui vous intéressent pour la maraude ?"
-
-
-        if not detected_borough:
-            response_message = "Dans quel arrondissement cherchez-vous une maraude ?"
-        api_url = f"{FLASK_API_BASE_URL}/distributions/borough/{detected_borough}"
-        try:
-            async with httpx.AsyncClient() as client:
-                flask_response = await client.get(api_url)
-                flask_response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
-                
-                distributions_data = flask_response.json()
-                response_message = str(distributions_data)
-        except Exception as e:
-            response_message = f"Une erreur inattendue est survenue: {e}"
-            print(f"Erreur inattendue: {e}")     
-    else :
-        print("test")
-        response_message = "Test"
+   
 
     return ChatResponse(response=response_message)
 

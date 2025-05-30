@@ -27,3 +27,5 @@ httpx
 beautifulsoup4
 selenium
 webdriver-manager
+os
+json
