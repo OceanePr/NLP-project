@@ -26,6 +26,8 @@ def home():
     return '<h1>Welcome to Infrastructures against insecurity API </h1>'
 
 
+# Route #1 : add a distribution in our MongoDB collection. You will need a borough number.
+
 @app.route('/add_distribution', methods=['GET', "POST"])
 def add_distribution():
     if request.method == 'POST':
@@ -53,6 +55,9 @@ def add_distribution():
         return render_template('add_distrib_success.html', cp=cp, address=address)
     return render_template('add_distrib.html')
 
+
+# Route #2 : get informations about a distribution through our MongoDB collection. You will need a borough number.
+
 @app.route('/distributions/borough/<string:borough_nb>', methods=['GET'])
 def get_distributions_by_borough(borough_nb):
     """
@@ -70,6 +75,70 @@ def get_distributions_by_borough(borough_nb):
     else:
         # Return a 404 Not Found if no distributions are found for that borough
         return jsonify({"message": f"No meal distributions found for borough: {borough_nb}"}), 404
+    
+
+# Route 3 : get informations about police stations through our MongoDB collection. You will need an borough number.
+
+@app.route('/police_stations/borough/<string:borough_nb>', methods=['GET'])
+def get_police_stations_info_by_borough(borough_nb):
+    """
+    Retrieves all police stations informations for a given borough.
+    The borough name is passed as a string in the URL.
+    """
+    police_stations_collection = db.db.police_stations # 
+    
+    # Simple exact match (case-sensitive):
+    police_stations = list(police_stations_collection.find({"arrondissement": int(borough_nb)}))
+
+    if police_stations:
+        # dumps handles MongoDB's ObjectId for JSON serialization
+        return dumps(police_stations), 200 # 200 OK
+    else:
+        # Return a 404 Not Found if no distributions are found for that borough
+        return jsonify({"message": f"No police station found for borough: {borough_nb}"}), 404
+
+
+# Route 4 : get informations about public showers through our MongoDB collection. You will need an borough number.
+
+@app.route('/public_showers/borough/<string:borough_nb>', methods=['GET'])
+def get_public_showers_info_by_borough(borough_nb):
+    """
+    Retrieves all public showers informations for a given borough.
+    The borough name is passed as a string in the URL.
+    """
+    public_showers_collection = db.db.public_showers # 
+    
+    # Simple exact match (case-sensitive):
+    public_showers = list(public_showers_collection.find({"arrondissement": int(borough_nb)}))
+
+    if public_showers:
+        # dumps handles MongoDB's ObjectId for JSON serialization
+        return dumps(public_showers), 200 # 200 OK
+    else:
+        # Return a 404 Not Found if no distributions are found for that borough
+        return jsonify({"message": f"No police station found for borough: {borough_nb}"}), 404
+
+
+# Route 5 : get informations about public hospitals our MongoDB collection. You will need an borough number.
+
+@app.route('/hospitals/borough/<string:borough_nb>', methods=['GET'])
+def get_hospitals_info_by_borough(borough_nb):
+    """
+    Retrieves all hospital informations for a given borough.
+    The borough name is passed as a string in the URL.
+    """
+    hospitals_collection = db.db.hospitals # 
+    
+    # Simple exact match (case-sensitive):
+    hospitals = list(hospitals_collection.find({"arrondissement": int(borough_nb)}))
+
+    if hospitals:
+        # dumps handles MongoDB's ObjectId for JSON serialization
+        return dumps(hospitals), 200 # 200 OK
+    else:
+        # Return a 404 Not Found if no distributions are found for that borough
+        return jsonify({"message": f"No police station found for borough: {borough_nb}"}), 404
+
 
 # @app.route('/get_bath_by_borough', methods=['GET'])
 # def get_bath_by_borough(borough_nb):

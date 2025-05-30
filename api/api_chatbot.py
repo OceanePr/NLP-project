@@ -108,7 +108,6 @@ async def user_text(chat: ChatRequest):
     for token in spacy_doc : 
         print(f"{token.text.lower()} → lemma: {token.lemma_.lower()}, POS: {token.pos_}")
 
- # ---------------A VERIFIER et A CORRIGER -------------------------
         lemma = token.lemma_.lower()
         print(lemma)
         if lemma in lemmes_vocab_maraude:
@@ -129,7 +128,9 @@ async def user_text(chat: ChatRequest):
       
     print(f"Thème détecté: {detected_theme}")
 
-# -------------------------------------------------------------------
+
+
+
     lieux = []
     detected_borough = None
     for ent in spacy_doc.ents:
@@ -202,6 +203,33 @@ async def user_text(chat: ChatRequest):
         else :
             print("test")
             response_message = "Test"
+
+    if detected_theme == "maraude": 
+        # --- EXTRACTION DES JOURS ---
+        days_keywords = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+        detected_days = [day.capitalize() for day in days_keywords if day in user_msg.lower()]
+
+        # Case 1 : missing day and borough
+        if not detected_borough and not detected_days:
+            response_message = "Pouvez-vous préciser l'arrondissement ainsi que le ou les jours qui vous intéressent pour la maraude ?"
+
+
+        if not detected_borough:
+            response_message = "Dans quel arrondissement cherchez-vous une maraude ?"
+        api_url = f"{FLASK_API_BASE_URL}/distributions/borough/{detected_borough}"
+        try:
+            async with httpx.AsyncClient() as client:
+                flask_response = await client.get(api_url)
+                flask_response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
+                
+                distributions_data = flask_response.json()
+                response_message = str(distributions_data)
+        except Exception as e:
+            response_message = f"Une erreur inattendue est survenue: {e}"
+            print(f"Erreur inattendue: {e}")     
+    else :
+        print("test")
+        response_message = "Test"
 
     return ChatResponse(response=response_message)
 
