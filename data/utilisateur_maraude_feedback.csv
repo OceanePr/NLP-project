@@ -1,0 +1,6 @@
+uuid,datetime,borough,theme,message,user_days
+42e9009a-8706-498d-be3b-94f48e299da2,2025-05-31T16:42:29.308241,13,maraude,Y a-t-il une distribution de repas prévue aujourd'hui dans le 13e arrondissement de Paris ?,
+66f5ccd4-b0e1-47c9-9237-3cd5c2f46c2b,2025-05-31T16:47:48.848388,13,maraude,Y a-t-il une distribution de repas prévue aujourd'hui dans le 13e arrondissement de Paris ?,
+27ee44f4-6e97-42ea-9162-a68e0dba79b8,2025-05-31T17:00:19.509599,13,maraude,Y a-t-il une distribution de repas prévue dans la semaine dans le 13e arrondissement de Paris ?,"Lundi, Jeudi"
+6a4a6ac9-cce7-4cc5-8f23-7ff7aa400b3c,2025-05-31T17:02:17.732715,13,maraude,Y a-t-il une distribution de repas prévue dans la semaine dans le 13e arrondissement de Paris ?,
+494d493d-4760-4f16-ab5e-ef8f19295a92,2025-05-31T17:02:28.878320,13,maraude,Y a-t-il une distribution de repas prévue dans la semaine dans le 13e arrondissement de Paris ?,"Lundi, Jeudi"

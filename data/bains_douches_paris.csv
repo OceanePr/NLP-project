@@ -1,120 +1,18 @@
-IDENTIFIANT,Identifiant DICOM,Nom,TYPE,Adresse,Code postal,HORAIRES PERIODE,arrondissement,Jour,Horaires
-BD17,18321,Bain -douche Pyrénées,Bains-douches,"296, rue des Pyrénées",75020,du 01/01/20 au 01/01/32,20,lundi,07h30 - 13h00
-BD11,18312,Bain-douche Ney,Bains-douches,"134, boulevard Ney",75018,du 01/01/20 au 01/01/32,18,lundi,07h30 - 13h00
-BD10,18313,Bain-douche Meaux,Bains-douches,"18, rue de Meaux",75019,du 01/01/20 au 01/01/32,19,lundi,07h30 - 13h00
-BD6,18290,Bain-douche des Deux-Ponts,Bains-douches,"8, rue des Deux-Ponts",75004,à partir du 01/01/20,4,lundi,-
-BD13,18314,Bain-douche Petitot,Bains-douches,"1, rue Petitot",75019,du 01/11/24 au 30/11/25,19,lundi,-
-BD3,18310,Bain-douche Blomet,Bains-douches,"17, rue Blomet",75015,du 01/01/20 au 01/01/32,15,lundi,07h30 - 13h00
-BD8,18323,Bain-douche Lacépède,Bains-douches,"50, rue Lacepède",75005,du 01/01/20 au 01/01/32,5,lundi,-
-BD7,18320,Bain-douche des Haies,Bains-douches,"27, rue des Haies",75020,du 01/01/20 au 01/01/32,20,lundi,-
-BD9,18325,Bain-douche Les Amiraux,Bains-douches,"6, rue Hermann-Lachapelle",75018,du 01/01/20 au 01/01/32,18,lundi,-
-BD4,18309,Bain-douche Butte-aux-Cailles,Bains-douches,"5, place Paul-Verlaine",75013,à partir du 16/06/20,13,lundi,-
-BD14,18324,Bain-douche Rome,Bains-douches,"43, rue de Rome",75008,du 01/01/20 au 01/01/32,8,lundi,-
-BD15,18315,Bain-douche Rouvet,Bains-douches,"1, rue Rouvet",75019,du 19/01/24 au 30/09/25,19,lundi,-
-BD1,18307,Bain-douche Audubon,Bains-douches,"11, rue Audubon",75012,du 01/01/20 au 01/01/32,12,lundi,12h00 - 18h00
-BD12,18306,Bain-douche Oberkampf,Bains-douches,"42, rue Oberkampf",75011,du 01/01/20 au 01/01/32,11,lundi,07h30 - 13h00
-BD16,18291,Bain-douche Saint-Merri,Bains-douches,"18, rue du Renard",75004,du 01/01/20 au 01/01/32,4,lundi,07h30 - 13h00
-BD2,18322,Bain-douche Bidassoa,Bains-douches,"27, rue de la Bidassoa",75020,du 01/01/20 au 01/01/32,20,lundi,-
-BD5,18308,Bain-douche Charenton,Bains-douches,"188, rue de Charenton",75012,du 01/01/20 au 01/02/25,12,lundi,-
-BD17,18321,Bain -douche Pyrénées,Bains-douches,"296, rue des Pyrénées",75020,du 01/01/20 au 01/01/32,20,mardi,07h30 - 13h00
-BD11,18312,Bain-douche Ney,Bains-douches,"134, boulevard Ney",75018,du 01/01/20 au 01/01/32,18,mardi,07h30 - 13h00
-BD10,18313,Bain-douche Meaux,Bains-douches,"18, rue de Meaux",75019,du 01/01/20 au 01/01/32,19,mardi,07h30 - 13h00
-BD6,18290,Bain-douche des Deux-Ponts,Bains-douches,"8, rue des Deux-Ponts",75004,à partir du 01/01/20,4,mardi,12h00 - 18h00
-BD13,18314,Bain-douche Petitot,Bains-douches,"1, rue Petitot",75019,du 01/11/24 au 30/11/25,19,mardi,12h00 - 18h00
-BD3,18310,Bain-douche Blomet,Bains-douches,"17, rue Blomet",75015,du 01/01/20 au 01/01/32,15,mardi,-
-BD8,18323,Bain-douche Lacépède,Bains-douches,"50, rue Lacepède",75005,du 01/01/20 au 01/01/32,5,mardi,07h30 - 13h00
-BD7,18320,Bain-douche des Haies,Bains-douches,"27, rue des Haies",75020,du 01/01/20 au 01/01/32,20,mardi,07h30 - 13h00
-BD9,18325,Bain-douche Les Amiraux,Bains-douches,"6, rue Hermann-Lachapelle",75018,du 01/01/20 au 01/01/32,18,mardi,12h00 - 18h00
-BD4,18309,Bain-douche Butte-aux-Cailles,Bains-douches,"5, place Paul-Verlaine",75013,à partir du 16/06/20,13,mardi,07h30 - 13h00
-BD14,18324,Bain-douche Rome,Bains-douches,"43, rue de Rome",75008,du 01/01/20 au 01/01/32,8,mardi,07h30 - 13h00
-BD15,18315,Bain-douche Rouvet,Bains-douches,"1, rue Rouvet",75019,du 19/01/24 au 30/09/25,19,mardi,-
-BD1,18307,Bain-douche Audubon,Bains-douches,"11, rue Audubon",75012,du 01/01/20 au 01/01/32,12,mardi,12h00 - 18h00
-BD12,18306,Bain-douche Oberkampf,Bains-douches,"42, rue Oberkampf",75011,du 01/01/20 au 01/01/32,11,mardi,07h30 - 13h00
-BD16,18291,Bain-douche Saint-Merri,Bains-douches,"18, rue du Renard",75004,du 01/01/20 au 01/01/32,4,mardi,07h30 - 13h00
-BD2,18322,Bain-douche Bidassoa,Bains-douches,"27, rue de la Bidassoa",75020,du 01/01/20 au 01/01/32,20,mardi,-
-BD5,18308,Bain-douche Charenton,Bains-douches,"188, rue de Charenton",75012,du 01/01/20 au 01/02/25,12,mardi,07h30 - 13h00
-BD17,18321,Bain -douche Pyrénées,Bains-douches,"296, rue des Pyrénées",75020,du 01/01/20 au 01/01/32,20,mercredi,-
-BD11,18312,Bain-douche Ney,Bains-douches,"134, boulevard Ney",75018,du 01/01/20 au 01/01/32,18,mercredi,07h30 - 13h00
-BD10,18313,Bain-douche Meaux,Bains-douches,"18, rue de Meaux",75019,du 01/01/20 au 01/01/32,19,mercredi,-
-BD6,18290,Bain-douche des Deux-Ponts,Bains-douches,"8, rue des Deux-Ponts",75004,à partir du 01/01/20,4,mercredi,12h00 - 18h00
-BD13,18314,Bain-douche Petitot,Bains-douches,"1, rue Petitot",75019,du 01/11/24 au 30/11/25,19,mercredi,12h00 - 18h00
-BD3,18310,Bain-douche Blomet,Bains-douches,"17, rue Blomet",75015,du 01/01/20 au 01/01/32,15,mercredi,07h30 - 13h00
-BD8,18323,Bain-douche Lacépède,Bains-douches,"50, rue Lacepède",75005,du 01/01/20 au 01/01/32,5,mercredi,07h30 - 13h00
-BD7,18320,Bain-douche des Haies,Bains-douches,"27, rue des Haies",75020,du 01/01/20 au 01/01/32,20,mercredi,07h30 - 13h00
-BD9,18325,Bain-douche Les Amiraux,Bains-douches,"6, rue Hermann-Lachapelle",75018,du 01/01/20 au 01/01/32,18,mercredi,12h00 - 18h00
-BD4,18309,Bain-douche Butte-aux-Cailles,Bains-douches,"5, place Paul-Verlaine",75013,à partir du 16/06/20,13,mercredi,-
-BD14,18324,Bain-douche Rome,Bains-douches,"43, rue de Rome",75008,du 01/01/20 au 01/01/32,8,mercredi,07h30 - 13h00
-BD15,18315,Bain-douche Rouvet,Bains-douches,"1, rue Rouvet",75019,du 19/01/24 au 30/09/25,19,mercredi,-
-BD1,18307,Bain-douche Audubon,Bains-douches,"11, rue Audubon",75012,du 01/01/20 au 01/01/32,12,mercredi,12h00 - 18h00
-BD12,18306,Bain-douche Oberkampf,Bains-douches,"42, rue Oberkampf",75011,du 01/01/20 au 01/01/32,11,mercredi,07h30 - 13h00
-BD16,18291,Bain-douche Saint-Merri,Bains-douches,"18, rue du Renard",75004,du 01/01/20 au 01/01/32,4,mercredi,07h30 - 13h00
-BD2,18322,Bain-douche Bidassoa,Bains-douches,"27, rue de la Bidassoa",75020,du 01/01/20 au 01/01/32,20,mercredi,-
-BD5,18308,Bain-douche Charenton,Bains-douches,"188, rue de Charenton",75012,du 01/01/20 au 01/02/25,12,mercredi,07h30 - 13h00
-BD17,18321,Bain -douche Pyrénées,Bains-douches,"296, rue des Pyrénées",75020,du 01/01/20 au 01/01/32,20,jeudi,07h30 - 13h00
-BD11,18312,Bain-douche Ney,Bains-douches,"134, boulevard Ney",75018,du 01/01/20 au 01/01/32,18,jeudi,-
-BD10,18313,Bain-douche Meaux,Bains-douches,"18, rue de Meaux",75019,du 01/01/20 au 01/01/32,19,jeudi,07h30 - 13h00
-BD6,18290,Bain-douche des Deux-Ponts,Bains-douches,"8, rue des Deux-Ponts",75004,à partir du 01/01/20,4,jeudi,12h00 - 18h00
-BD13,18314,Bain-douche Petitot,Bains-douches,"1, rue Petitot",75019,du 01/11/24 au 30/11/25,19,jeudi,12h00 - 18h00
-BD3,18310,Bain-douche Blomet,Bains-douches,"17, rue Blomet",75015,du 01/01/20 au 01/01/32,15,jeudi,07h30 - 13h00
-BD8,18323,Bain-douche Lacépède,Bains-douches,"50, rue Lacepède",75005,du 01/01/20 au 01/01/32,5,jeudi,07h30 - 13h00
-BD7,18320,Bain-douche des Haies,Bains-douches,"27, rue des Haies",75020,du 01/01/20 au 01/01/32,20,jeudi,07h30 - 13h00
-BD9,18325,Bain-douche Les Amiraux,Bains-douches,"6, rue Hermann-Lachapelle",75018,du 01/01/20 au 01/01/32,18,jeudi,12h18 - 18h00
-BD4,18309,Bain-douche Butte-aux-Cailles,Bains-douches,"5, place Paul-Verlaine",75013,à partir du 16/06/20,13,jeudi,07h30 - 13h00
-BD14,18324,Bain-douche Rome,Bains-douches,"43, rue de Rome",75008,du 01/01/20 au 01/01/32,8,jeudi,07h30 - 13h00
-BD15,18315,Bain-douche Rouvet,Bains-douches,"1, rue Rouvet",75019,du 19/01/24 au 30/09/25,19,jeudi,-
-BD1,18307,Bain-douche Audubon,Bains-douches,"11, rue Audubon",75012,du 01/01/20 au 01/01/32,12,jeudi,12h00 - 18h00
-BD12,18306,Bain-douche Oberkampf,Bains-douches,"42, rue Oberkampf",75011,du 01/01/20 au 01/01/32,11,jeudi,-
-BD16,18291,Bain-douche Saint-Merri,Bains-douches,"18, rue du Renard",75004,du 01/01/20 au 01/01/32,4,jeudi,-
-BD2,18322,Bain-douche Bidassoa,Bains-douches,"27, rue de la Bidassoa",75020,du 01/01/20 au 01/01/32,20,jeudi,-
-BD5,18308,Bain-douche Charenton,Bains-douches,"188, rue de Charenton",75012,du 01/01/20 au 01/02/25,12,jeudi,07h30 - 13h00
-BD17,18321,Bain -douche Pyrénées,Bains-douches,"296, rue des Pyrénées",75020,du 01/01/20 au 01/01/32,20,vendredi,07h30 - 13h00
-BD11,18312,Bain-douche Ney,Bains-douches,"134, boulevard Ney",75018,du 01/01/20 au 01/01/32,18,vendredi,07h30 - 13h00
-BD10,18313,Bain-douche Meaux,Bains-douches,"18, rue de Meaux",75019,du 01/01/20 au 01/01/32,19,vendredi,07h30 - 13h00
-BD6,18290,Bain-douche des Deux-Ponts,Bains-douches,"8, rue des Deux-Ponts",75004,à partir du 01/01/20,4,vendredi,12h00 - 18h00
-BD13,18314,Bain-douche Petitot,Bains-douches,"1, rue Petitot",75019,du 01/11/24 au 30/11/25,19,vendredi,12h00 - 18h00
-BD3,18310,Bain-douche Blomet,Bains-douches,"17, rue Blomet",75015,du 01/01/20 au 01/01/32,15,vendredi,07h30 - 13h00
-BD8,18323,Bain-douche Lacépède,Bains-douches,"50, rue Lacepède",75005,du 01/01/20 au 01/01/32,5,vendredi,07h30 - 13h00
-BD7,18320,Bain-douche des Haies,Bains-douches,"27, rue des Haies",75020,du 01/01/20 au 01/01/32,20,vendredi,07h30 - 13h00
-BD9,18325,Bain-douche Les Amiraux,Bains-douches,"6, rue Hermann-Lachapelle",75018,du 01/01/20 au 01/01/32,18,vendredi,12h00 - 18h00
-BD4,18309,Bain-douche Butte-aux-Cailles,Bains-douches,"5, place Paul-Verlaine",75013,à partir du 16/06/20,13,vendredi,07h30 - 13h00
-BD14,18324,Bain-douche Rome,Bains-douches,"43, rue de Rome",75008,du 01/01/20 au 01/01/32,8,vendredi,07h30 - 13h00
-BD15,18315,Bain-douche Rouvet,Bains-douches,"1, rue Rouvet",75019,du 19/01/24 au 30/09/25,19,vendredi,-
-BD1,18307,Bain-douche Audubon,Bains-douches,"11, rue Audubon",75012,du 01/01/20 au 01/01/32,12,vendredi,12h00 - 18h00
-BD12,18306,Bain-douche Oberkampf,Bains-douches,"42, rue Oberkampf",75011,du 01/01/20 au 01/01/32,11,vendredi,07h30 - 13h00
-BD16,18291,Bain-douche Saint-Merri,Bains-douches,"18, rue du Renard",75004,du 01/01/20 au 01/01/32,4,vendredi,07h30 - 13h00
-BD2,18322,Bain-douche Bidassoa,Bains-douches,"27, rue de la Bidassoa",75020,du 01/01/20 au 01/01/32,20,vendredi,-
-BD5,18308,Bain-douche Charenton,Bains-douches,"188, rue de Charenton",75012,du 01/01/20 au 01/02/25,12,vendredi,07h30 - 13h00
-BD17,18321,Bain -douche Pyrénées,Bains-douches,"296, rue des Pyrénées",75020,du 01/01/20 au 01/01/32,20,samedi,07h30 - 13h00
-BD11,18312,Bain-douche Ney,Bains-douches,"134, boulevard Ney",75018,du 01/01/20 au 01/01/32,18,samedi,07h30 - 13h00
-BD10,18313,Bain-douche Meaux,Bains-douches,"18, rue de Meaux",75019,du 01/01/20 au 01/01/32,19,samedi,07h30 - 13h00
-BD6,18290,Bain-douche des Deux-Ponts,Bains-douches,"8, rue des Deux-Ponts",75004,à partir du 01/01/20,4,samedi,12h00 - 18h00
-BD13,18314,Bain-douche Petitot,Bains-douches,"1, rue Petitot",75019,du 01/11/24 au 30/11/25,19,samedi,12h00 - 18h00
-BD3,18310,Bain-douche Blomet,Bains-douches,"17, rue Blomet",75015,du 01/01/20 au 01/01/32,15,samedi,07h30 - 13h00
-BD8,18323,Bain-douche Lacépède,Bains-douches,"50, rue Lacepède",75005,du 01/01/20 au 01/01/32,5,samedi,07h30 - 13h00
-BD7,18320,Bain-douche des Haies,Bains-douches,"27, rue des Haies",75020,du 01/01/20 au 01/01/32,20,samedi,07h30 - 13h00
-BD9,18325,Bain-douche Les Amiraux,Bains-douches,"6, rue Hermann-Lachapelle",75018,du 01/01/20 au 01/01/32,18,samedi,12h00 - 18h00
-BD4,18309,Bain-douche Butte-aux-Cailles,Bains-douches,"5, place Paul-Verlaine",75013,à partir du 16/06/20,13,samedi,07h30 - 13h00
-BD14,18324,Bain-douche Rome,Bains-douches,"43, rue de Rome",75008,du 01/01/20 au 01/01/32,8,samedi,07h30 - 13h00
-BD15,18315,Bain-douche Rouvet,Bains-douches,"1, rue Rouvet",75019,du 19/01/24 au 30/09/25,19,samedi,-
-BD1,18307,Bain-douche Audubon,Bains-douches,"11, rue Audubon",75012,du 01/01/20 au 01/01/32,12,samedi,-
-BD12,18306,Bain-douche Oberkampf,Bains-douches,"42, rue Oberkampf",75011,du 01/01/20 au 01/01/32,11,samedi,07h30 - 13h00
-BD16,18291,Bain-douche Saint-Merri,Bains-douches,"18, rue du Renard",75004,du 01/01/20 au 01/01/32,4,samedi,07h30 - 13h00
-BD2,18322,Bain-douche Bidassoa,Bains-douches,"27, rue de la Bidassoa",75020,du 01/01/20 au 01/01/32,20,samedi,-
-BD5,18308,Bain-douche Charenton,Bains-douches,"188, rue de Charenton",75012,du 01/01/20 au 01/02/25,12,samedi,07h30 - 13h00
-BD17,18321,Bain -douche Pyrénées,Bains-douches,"296, rue des Pyrénées",75020,du 01/01/20 au 01/01/32,20,dimanche,08h00 - 12h30
-BD11,18312,Bain-douche Ney,Bains-douches,"134, boulevard Ney",75018,du 01/01/20 au 01/01/32,18,dimanche,08h00 - 12h30
-BD10,18313,Bain-douche Meaux,Bains-douches,"18, rue de Meaux",75019,du 01/01/20 au 01/01/32,19,dimanche,08h00 - 12h30
-BD6,18290,Bain-douche des Deux-Ponts,Bains-douches,"8, rue des Deux-Ponts",75004,à partir du 01/01/20,4,dimanche,-
-BD13,18314,Bain-douche Petitot,Bains-douches,"1, rue Petitot",75019,du 01/11/24 au 30/11/25,19,dimanche,-
-BD3,18310,Bain-douche Blomet,Bains-douches,"17, rue Blomet",75015,du 01/01/20 au 01/01/32,15,dimanche,08h00 - 12h30
-BD8,18323,Bain-douche Lacépède,Bains-douches,"50, rue Lacepède",75005,du 01/01/20 au 01/01/32,5,dimanche,08h00 - 12h30
-BD7,18320,Bain-douche des Haies,Bains-douches,"27, rue des Haies",75020,du 01/01/20 au 01/01/32,20,dimanche,08h00 - 12h30
-BD9,18325,Bain-douche Les Amiraux,Bains-douches,"6, rue Hermann-Lachapelle",75018,du 01/01/20 au 01/01/32,18,dimanche,-
-BD4,18309,Bain-douche Butte-aux-Cailles,Bains-douches,"5, place Paul-Verlaine",75013,à partir du 16/06/20,13,dimanche,08h30 - 12h30
-BD14,18324,Bain-douche Rome,Bains-douches,"43, rue de Rome",75008,du 01/01/20 au 01/01/32,8,dimanche,08h00 - 12h30
-BD15,18315,Bain-douche Rouvet,Bains-douches,"1, rue Rouvet",75019,du 19/01/24 au 30/09/25,19,dimanche,-
-BD1,18307,Bain-douche Audubon,Bains-douches,"11, rue Audubon",75012,du 01/01/20 au 01/01/32,12,dimanche,-
-BD12,18306,Bain-douche Oberkampf,Bains-douches,"42, rue Oberkampf",75011,du 01/01/20 au 01/01/32,11,dimanche,08h00 - 12h30
-BD16,18291,Bain-douche Saint-Merri,Bains-douches,"18, rue du Renard",75004,du 01/01/20 au 01/01/32,4,dimanche,08h00 - 12h30
-BD2,18322,Bain-douche Bidassoa,Bains-douches,"27, rue de la Bidassoa",75020,du 01/01/20 au 01/01/32,20,dimanche,-
-BD5,18308,Bain-douche Charenton,Bains-douches,"188, rue de Charenton",75012,du 01/01/20 au 01/02/25,12,dimanche,08h00 - 12h30
+,IDENTIFIANT,Identifiant DICOM,Nom,TYPE,Adresse,Code postal,HORAIRES PERIODE,HORAIRES LUNDI,HORAIRES MARDI,HORAIRES MERCREDI,HORAIRES JEUDI,HORAIRES VENDREDI,HORAIRES SAMEDI,HORAIRES DIMANCHE,arrondissement
+14,BD17,18321,Bain -douche Pyrénées,Bains-douches,"296, rue des Pyrénées",75020,du 01/01/20 au 01/01/32,07h30 - 13h00,07h30 - 13h00,-,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,08h00 - 12h30,20
+37,BD11,18312,Bain-douche Ney,Bains-douches,"134, boulevard Ney",75018,du 01/01/20 au 01/01/32,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,-,07h30 - 13h00,07h30 - 13h00,08h00 - 12h30,18
+62,BD10,18313,Bain-douche Meaux,Bains-douches,"18, rue de Meaux",75019,du 01/01/20 au 01/01/32,07h30 - 13h00,07h30 - 13h00,-,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,08h00 - 12h30,19
+109,BD6,18290,Bain-douche des Deux-Ponts,Bains-douches,"8, rue des Deux-Ponts",75004,à partir du 01/01/20,-,12h00 - 18h00,12h00 - 18h00,12h00 - 18h00,12h00 - 18h00,12h00 - 18h00,-,4
+133,BD13,18314,Bain-douche Petitot,Bains-douches,"1, rue Petitot",75019,du 01/11/24 au 30/11/25,-,12h00 - 18h00,12h00 - 18h00,12h00 - 18h00,12h00 - 18h00,12h00 - 18h00,-,19
+149,BD3,18310,Bain-douche Blomet,Bains-douches,"17, rue Blomet",75015,du 01/01/20 au 01/01/32,07h30 - 13h00,-,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,08h00 - 12h30,15
+150,BD8,18323,Bain-douche Lacépède,Bains-douches,"50, rue Lacepède",75005,du 01/01/20 au 01/01/32,-,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,08h00 - 12h30,5
+174,BD7,18320,Bain-douche des Haies,Bains-douches,"27, rue des Haies",75020,du 01/01/20 au 01/01/32,-,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,08h00 - 12h30,20
+204,BD9,18325,Bain-douche Les Amiraux,Bains-douches,"6, rue Hermann-Lachapelle",75018,du 01/01/20 au 01/01/32,-,12h00 - 18h00,12h00 - 18h00,12h18 - 18h00,12h00 - 18h00,12h00 - 18h00,-,18
+239,BD4,18309,Bain-douche Butte-aux-Cailles,Bains-douches,"5, place Paul-Verlaine",75013,à partir du 16/06/20,-,07h30 - 13h00,-,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,08h30 - 12h30,13
+266,BD14,18324,Bain-douche Rome,Bains-douches,"43, rue de Rome",75008,du 01/01/20 au 01/01/32,-,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,08h00 - 12h30,8
+272,BD15,18315,Bain-douche Rouvet,Bains-douches,"1, rue Rouvet",75019,du 19/01/24 au 30/09/25,-,-,-,-,-,-,-,19
+300,BD1,18307,Bain-douche Audubon,Bains-douches,"11, rue Audubon",75012,du 01/01/20 au 01/01/32,12h00 - 18h00,12h00 - 18h00,12h00 - 18h00,12h00 - 18h00,12h00 - 18h00,-,-,12
+445,BD12,18306,Bain-douche Oberkampf,Bains-douches,"42, rue Oberkampf",75011,du 01/01/20 au 01/01/32,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,-,07h30 - 13h00,07h30 - 13h00,08h00 - 12h30,11
+446,BD16,18291,Bain-douche Saint-Merri,Bains-douches,"18, rue du Renard",75004,du 01/01/20 au 01/01/32,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,-,07h30 - 13h00,07h30 - 13h00,08h00 - 12h30,4
+452,BD2,18322,Bain-douche Bidassoa,Bains-douches,"27, rue de la Bidassoa",75020,du 01/01/20 au 01/01/32,-,-,-,-,-,-,-,20
+476,BD5,18308,Bain-douche Charenton,Bains-douches,"188, rue de Charenton",75012,du 01/01/20 au 01/02/25,-,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,07h30 - 13h00,08h00 - 12h30,12

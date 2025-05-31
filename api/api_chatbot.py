@@ -39,9 +39,38 @@ def classify_intent(message: str):
         return "unknown", None
 
 # Function to make a sentence from a dict corresponding to a document in the distribution collection
-def make_sentence_for_distribution(dct_distrib): 
-    sentence = f"- Le {dct_distrib['Jour']} à l'adresse : {dct_distrib['Adresse']}, {dct_distrib['Code Postal']}, aux horaires suivants : {dct_distrib['Horaires']}, au nom de : {dct_distrib['Organisation']}"
+def make_sentence_for_distribution(distrib): 
+    jour = distrib.get("Jour", "jour non précisé")
+    adresse = distrib.get("Adresse", "adresse inconnue")
+    horaires = distrib.get("Horaires", "horaires inconnus")
+    organisation = distrib.get("Organisation", "organisation inconnue")
+    sentence = f"- - Le {jour} à l'adresse : {adresse}, aux horaires suivants : {horaires}, au nom de : {organisation}"
     return sentence 
+
+def make_sentence_for_hospital(hospital):
+    nom = hospital.get("raison_sociale", "Nom inconnu")
+    adresse = hospital.get("adresse_complete", "Adresse inconnue")
+    tel = hospital.get("num_tel", "Téléphone non renseigné")
+    categorie = hospital.get("categorie_de_l_etablissement", "Catégorie inconnue")
+    sentence = f"- {nom}, situé au {adresse}, catégorie : {categorie}, téléphone : {tel}"
+    return sentence
+
+def make_sentence_for_shower(doc):
+    adresse = doc.get("Adresse", "Adresse inconnue")
+    horaires = doc.get("Horaires", "Horaires non précisés")
+    mixte = doc.get("Mixite", "Mixité non précisée")
+    jour = doc.get("Jour", "Jour non précisé")
+    sentence = f"- Adresse : {adresse}, jour : {jour}  horaires : {horaires}, mixité : {mixte}"
+    return sentence
+
+def make_sentence_for_police_station(pol):
+    adresse = pol.get("Adresse", "Adresse inconnue")
+    organisation = pol.get("Organisation", "Etablissement inconnu")
+    jour = pol.get("Jour", "Jour non précisé")
+    horaires = pol.get("Horaires", "Horaires non précisés")
+    sentence = f"- Orgnisation : {organisation}, adresse : {adresse}, jour : {jour}, horaires : {horaires}"
+    return sentence
+
 
 
 # Chargement du modèle français de spaCy
@@ -119,39 +148,77 @@ async def user_text(chat: ChatRequest):
 
     user_msg = chat.message
     spacy_doc = nlp(user_msg)
-
     print(spacy_doc)
-    # Intent classification
-    api_method = classify_intent(user_msg)
-    print(api_method)
+
+
+
+    ################ User context ##########################
+
+    session_file = "data/user_sessions.json"
+    user_id_file = "data/current_user.json"
+
+    
+    if not os.path.exists(user_id_file):
+        return ChatResponse(response="Bonjour ! Bienvenue sur le chatbot pour Infrastructures qui permet de lutter contre la précarité." \
+        "Pour commencer, pourriez-vous saisir un identifiant, s'il vous plaît ? (ex: votre prénom).")
+    
+    # keyword to close the session : "fin"
+    if chat.message.strip().lower() == "fin":
+        if os.path.exists(user_id_file):
+            with open(user_id_file, "r", encoding="utf-8") as f:
+                user_id = f.read().strip()
+            # delete user data
+            if os.path.exists(session_file):
+                with open(session_file, "r", encoding="utf-8") as f:
+                    session_data = json.load(f)
+                session_data.pop(user_id, None)
+                with open(session_file, "w", encoding="utf-8") as f:
+                    json.dump(session_data, f, ensure_ascii=False)
+            os.remove(user_id_file)
+        return ChatResponse(response="Votre session est terminée. À bientôt !")
+
+
+    
+    if os.path.exists(session_file):
+        with open(session_file, "r", encoding="utf-8") as f:
+            session_data = json.load(f)
+    else:
+        session_data = {}
 
     detected_theme = "inconnu"
     for token in spacy_doc : 
-        print(f"{token.text.lower()} → lemma: {token.lemma_.lower()}, POS: {token.pos_}")
-
         lemma = token.lemma_.lower()
-        print(lemma)
         if lemma in lemmes_vocab_maraude:
-            detected_theme = "maraude" #{"theme": "médical"}
+            detected_theme = "maraude"
             break
         elif lemma in lemmes_vocab_douche:
-            detected_theme = "douche"#{"theme": "police"}
+            detected_theme = "douche"
             break
         elif lemma in lemmes_vocab_medical:
-            detected_theme = "médical"#{"theme": "douche"}
+            detected_theme = "médical"
             break
         elif lemma in lemmes_vocab_police:
-            detected_theme = "police"#{"theme": "maraude"}
+            detected_theme = "police"
             break
-        else:
-            detected_theme = "inconnu"#{"theme": "inconnu"}
-
       
+
+    if detected_theme == "inconnu" and "last_theme" in session_data:
+        detected_theme = session_data["last_theme"]
+
+    session_data["last_theme"] = detected_theme
+    with open(session_file, "w", encoding="utf-8") as f:
+        json.dump(session_data, f, ensure_ascii=False)
+
+    ############# End of user context #################################
+
+
+
+    # Intent classification
+    api_method = classify_intent(user_msg)
+    print(api_method)
+        
     print(f"Thème détecté: {detected_theme}")
-
-
-
-
+    
     lieux = []
     detected_borough = None
     for ent in spacy_doc.ents:
@@ -182,7 +249,7 @@ async def user_text(chat: ChatRequest):
    # ])
    # print("Texte nettoyé :", clean_text)
 
-  
+    response_message = "Je n'ai pas compris votre demande. Pouvez-vous reformuler ?"    
     if not detected_borough and api_method == "GET": 
         response_message = "Je n'ai pas réussi à trouver dans quel arrondissement de Paris vous souhaitez effectuer votre recherche, pourriez-vous me le préciser s'il vous plaît ? "
         
@@ -262,7 +329,7 @@ async def user_text(chat: ChatRequest):
                     
                     police_station_data = flask_response.json()
                     print(police_station_data)
-                    sentences = [make_sentence_for_distribution(police) for police in police_station_data]
+                    sentences = [make_sentence_for_police_station(police) for police in police_station_data]
                     final_sentence = "\n".join(sentences)
                     message = f"Voici les établissements judiciaires dans l'arrondissement n°{detected_borough}: \n" + final_sentence
                     response_message = message
@@ -274,23 +341,43 @@ async def user_text(chat: ChatRequest):
         
 ######### Subject = "Douche" // requête GET ############
 
-        elif detected_theme == "douche": 
+        elif detected_theme == "douche":
+            # To retrieve available bourouh numbers in our public_shower collection
+            try:
+                async with httpx.AsyncClient() as client:
+                    boroughs_response = await client.get(f"{FLASK_API_BASE_URL}/public_showers/available_boroughs")
+                    boroughs_response.raise_for_status()
+                    douche_arrondissements_disponibles = boroughs_response.json()
+            except Exception as e:
+                return ChatResponse(response=f"Erreur lors de la récupération des arrondissements disponibles : {e}")
+
+            if detected_borough not in douche_arrondissements_disponibles:
+                arr_str = ', '.join([f"{a}e" for a in douche_arrondissements_disponibles])
+                response_message = (
+                    f"Nous sommes désolées, il n'y a pas de douche publique enregistrée dans l'arrondissement n°{detected_borough}. "
+                    f"Voici les arrondissements actuellement couverts : {arr_str}. "
+                    "Veuillez indiquer un autre arrondissement parmi cette liste."
+                )
+                return ChatResponse(response=response_message)
+
+            # To retrive public shower informations
             api_url = f"{FLASK_API_BASE_URL}/public_showers/borough/{detected_borough}"
-        
             try:
                 async with httpx.AsyncClient() as client:
                     flask_response = await client.get(api_url)
-                    flask_response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
-                    
+                    flask_response.raise_for_status()
+
                     public_shower_data = flask_response.json()
                     print(public_shower_data)
-                    sentences = [make_sentence_for_distribution(shower) for shower in public_shower_data]
+
+                    sentences = [make_sentence_for_shower(shower) for shower in public_shower_data]
                     final_sentence = "\n".join(sentences)
-                    message = f"Voici les douches publiques dans l'arrondissement n°{detected_borough}: \n" + final_sentence
-                    response_message = message
+
+                    response_message = f"Voici les douches publiques dans l'arrondissement n°{detected_borough}:\n{final_sentence}"
             except Exception as e:
                 response_message = f"Une erreur inattendue est survenue: {e}"
                 print(f"Erreur inattendue: {e}")
+
         
           
         
@@ -306,7 +393,7 @@ async def user_text(chat: ChatRequest):
                     
                     hospital_data = flask_response.json()
                     print(hospital_data)
-                    sentences = [make_sentence_for_distribution(hospital) for hospital in hospital_data]
+                    sentences = [make_sentence_for_hospital(hospital) for hospital in hospital_data]
                     final_sentence = "\n".join(sentences)
                     message = f"Voici les hôpitaux dans l'arrondissement n°{detected_borough}: \n" + final_sentence
                     response_message = message

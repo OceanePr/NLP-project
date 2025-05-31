@@ -74,6 +74,10 @@ lemmes_vocab_medical = [
     "urgence",
     "vaccination",
     "vasculaire",
+    "blesser",
+    "tomber",
+    "couper",
+    "chuter",
 ]
 
 lemmes_vocab_police = [

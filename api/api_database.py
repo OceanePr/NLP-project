@@ -3,7 +3,8 @@ from flask_pymongo import PyMongo
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template 
 from flask import Flask, request, jsonify
-from bson.json_util import dumps 
+from bson.json_util import dumps
+from flask_pymongo import PyMongo
 
 
 app = Flask(__name__)
@@ -116,7 +117,19 @@ def get_public_showers_info_by_borough(borough_nb):
         return dumps(public_showers), 200 # 200 OK
     else:
         # Return a 404 Not Found if no distributions are found for that borough
-        return jsonify({"message": f"No police station found for borough: {borough_nb}"}), 404
+        return jsonify({"message": f"No public shower found for borough: {borough_nb}"}), 404
+
+
+# Route 4-1 : get borough number from public showers
+@app.route("/public_showers/available_boroughs", methods=["GET"])
+def get_public_shower_boroughs():
+    try:
+        boroughs = db.db["public_showers"].distinct("arrondissement")
+        return jsonify(sorted(boroughs)), 200
+    except Exception as e:
+        print(f"Erreur Flask - public showers boroughs: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 
 # Route 5 : get informations about public hospitals our MongoDB collection. You will need an borough number.
@@ -137,7 +150,10 @@ def get_hospitals_info_by_borough(borough_nb):
         return dumps(hospitals), 200 # 200 OK
     else:
         # Return a 404 Not Found if no distributions are found for that borough
-        return jsonify({"message": f"No police station found for borough: {borough_nb}"}), 404
+        return jsonify({"message": f"No hospital found for borough: {borough_nb}"}), 404
+
+
+
 
 
 # @app.route('/get_bath_by_borough', methods=['GET'])
@@ -152,6 +168,19 @@ def get_hospitals_info_by_borough(borough_nb):
 #     # MongoDB's ObjectId is not directly JSON serializable.
 #     # dumps from bson.json_util handles this gracefully.
 #     return dumps(all_products), 200 # 200 OK status code
+
+
+# To check all available routes : go to your borwser and put "http://127.0.0.1:5000/routes"
+
+@app.route("/routes", methods=["GET"])
+def list_routes():
+    import urllib
+    output = []
+    for rule in app.url_map.iter_rules():
+        methods = ','.join(rule.methods)
+        line = urllib.parse.unquote(f"{rule.endpoint}: {rule.rule} [{methods}]")
+        output.append(line)
+    return "<br>".join(output)
 
 
 if __name__ == '__main__':
