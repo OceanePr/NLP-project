@@ -33,7 +33,7 @@ def classify_intent(message: str):
         return "POST"
     elif re.search(r"\b(modifier|changer|mettre à jour)\b", message):
         return "PUT"
-    elif re.search(r"\b(y a-t-il|où|quand|est-ce qu'il y a|je cherche|existe|besoin)\b", message):
+    elif re.search(r"\b(y a-t-il|où|quand|est-ce qu'il y a|je cherche|existe|besoin|savoir|connaitre|connaître|vérifier)\b", message):
         return "GET"
     else:
         return "unknown", None
@@ -154,20 +154,16 @@ async def user_text(chat: ChatRequest):
 
     ################ User context ##########################
 
+
     session_file = "data/user_sessions.json"
     user_id_file = "data/current_user.json"
 
-    
-    if not os.path.exists(user_id_file):
-        return ChatResponse(response="Bonjour ! Bienvenue sur le chatbot pour Infrastructures qui permet de lutter contre la précarité." \
-        "Pour commencer, pourriez-vous saisir un identifiant, s'il vous plaît ? (ex: votre prénom).")
-    
-    # keyword to close the session : "fin"
+    # Si l'utilisateur tape "fin", on termine la session
     if chat.message.strip().lower() == "fin":
         if os.path.exists(user_id_file):
             with open(user_id_file, "r", encoding="utf-8") as f:
                 user_id = f.read().strip()
-            # delete user data
+            # Supprimer les données de session
             if os.path.exists(session_file):
                 with open(session_file, "r", encoding="utf-8") as f:
                     session_data = json.load(f)
@@ -177,16 +173,44 @@ async def user_text(chat: ChatRequest):
             os.remove(user_id_file)
         return ChatResponse(response="Votre session est terminée. À bientôt !")
 
+    # Si la session n'est pas commencée
+    if not os.path.exists(user_id_file):
+        # Si juste un prénom est donné
+        if re.match(r"^[a-zA-Zàâçéèêëîïôûùüÿñæœ\-']+$", chat.message.strip()):
+            user_id = chat.message.strip()
+            with open(user_id_file, "w", encoding="utf-8") as f:
+                f.write(user_id)
+            return ChatResponse(response=f"Merci {user_id}, votre session est bien commencée. Vous pouvez poser votre question. "
+                                        f"Votre session se terminera en tapant le mot 'fin'.")
+        
+        # Sinon, on tente d'extraire un prénom dans une phrase type "Je m'appelle Hélène"
+        match = re.search(r"(?:je m'appelle|moi c'est)\s+([a-zA-Zàâçéèêëîïôûùüÿñæœ\-']+)", chat.message.strip().lower())
+        if match:
+            user_id = match.group(1).capitalize()
+            with open(user_id_file, "w", encoding="utf-8") as f:
+                f.write(user_id)
+            return ChatResponse(response=f"Merci {user_id}, votre session est bien commencée. Vous pouvez poser votre question. "
+                                        f"Votre session se terminera en tapant le mot 'fin'.")
+        
+        # Si rien n'est détecté
+        return ChatResponse(response="Bonjour ! Bienvenue sur le chatbot pour Infrastructures qui permet de lutter contre la précarité. "
+                                    "Pour commencer, pourriez-vous saisir un identifiant, s'il vous plaît ? (ex: votre prénom).")
 
-    
+    # Lecture de l'identifiant courant
+    with open(user_id_file, "r", encoding="utf-8") as f:
+        user_id = f.read().strip()
+
+    # Charger les sessions existantes
     if os.path.exists(session_file):
         with open(session_file, "r", encoding="utf-8") as f:
             session_data = json.load(f)
     else:
         session_data = {}
 
+    # Détection du thème (si mot-clé connu dans le vocabulaire)
     detected_theme = "inconnu"
-    for token in spacy_doc : 
+    print("LEMMES DÉTECTÉS DANS LA PHRASE :", [token.lemma_.lower() for token in spacy_doc])
+    for token in spacy_doc:
         lemma = token.lemma_.lower()
         if lemma in lemmes_vocab_maraude:
             detected_theme = "maraude"
@@ -200,16 +224,21 @@ async def user_text(chat: ChatRequest):
         elif lemma in lemmes_vocab_police:
             detected_theme = "police"
             break
-      
 
-    if detected_theme == "inconnu" and "last_theme" in session_data:
-        detected_theme = session_data["last_theme"]
+    # Si aucun thème détecté, reprendre le dernier connu
+    if detected_theme == "inconnu" and user_id in session_data and "last_theme" in session_data[user_id]:
+        detected_theme = session_data[user_id]["last_theme"]
 
-    session_data["last_theme"] = detected_theme
+    # Mise à jour du thème pour cet utilisateur
+    if user_id not in session_data:
+        session_data[user_id] = {}
+    session_data[user_id]["last_theme"] = detected_theme
+
     with open(session_file, "w", encoding="utf-8") as f:
         json.dump(session_data, f, ensure_ascii=False)
 
-    ############# End of user context #################################
+############# End of user context #################################
+
 
 
 
