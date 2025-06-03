@@ -13,14 +13,6 @@ app = Flask(__name__)
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/infrastructures_precarite'
 db = PyMongo(app)
 
-# class Baths_showers(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(80), unique=True, nullable=False)
-#     address = db.Column(db.String(80), unique=True, nullable=False)
-
-#     def __repr__(self):
-#         return f"Shower(name = {self.name}, address = {self.address})"
-
 
 @app.route('/')
 def home():
@@ -32,30 +24,42 @@ def home():
 @app.route('/add_distribution', methods=['GET', "POST"])
 def add_distribution():
     if request.method == 'POST':
-        cp = request.form["cp"]
-        address = request.form["address"] 
-        city = request.form["city"]        
-        schedules = request.form["schedules"] 
-        day = request.form["day"]   
-        organisation = request.form["organisation"] 
-        borough = request.form["borough"]  
+        # Check if content type is JSON
+        if request.is_json:
+            data = request.get_json()
+        else:
+            # Fallback for form data, though not ideal for API calls
+            data = request.form
 
-        
-       # info to create a new movie title and plot
-        new_distrib = {
-           "Code Postal": int(cp),
-           "Adresse": address, 
-           "Ville": city,
-           "Horaires": schedules,
-           "Jour": day,
-           "Organisation": organisation,
-           "arrondissement": int(borough), 
-       }  
-        
-        db.db.meal_distribution.insert_one(new_distrib)
-        return render_template('add_distrib_success.html', cp=cp, address=address)
+        try:
+            cp = data["cp"]
+            address = data["address"]
+            city = data["city"]
+            schedules = data["schedules"]
+            day = data["day"]
+            organisation = data["organisation"]
+            borough = data["borough"]
+
+            new_distrib = {
+                "Code Postal": int(cp),
+                "Adresse": address,
+                "Ville": city,
+                "Horaires": schedules,
+                "Jour": day,
+                "Organisation": organisation,
+                "arrondissement": int(borough),
+            }
+
+
+            print(f"Adding to DB: {new_distrib}")
+            db.db.meal_distribution.insert_one(new_distrib)
+
+            return jsonify({"message": "Distribution added successfully!", "data": new_distrib}), 201
+        except KeyError as e:
+            return jsonify({"error": f"Missing data: {e}"}), 400
+        except ValueError as e:
+            return jsonify({"error": f"Invalid data type for field: {e}"}), 400
     return render_template('add_distrib.html')
-
 
 # Route #2 : get informations about a distribution through our MongoDB collection. You will need a borough number.
 
@@ -77,7 +81,16 @@ def get_distributions_by_borough(borough_nb):
         # Return a 404 Not Found if no distributions are found for that borough
         return jsonify({"message": f"No meal distributions found for borough: {borough_nb}"}), 404
     
-
+# Route 2-1 : get borough number from meal distribution
+@app.route("/meal_distribution/available_boroughs", methods=["GET"])
+def get_meal_distribution_boroughs():
+    try:
+        boroughs = db.db["meal_distribution"].distinct("arrondissement")
+        return jsonify(sorted(boroughs)), 200
+    except Exception as e:
+        print(f"Erreur Flask - meal distribution boroughs: {e}")
+        return jsonify({"error": str(e)}), 500
+    
 # Route 3 : get informations about police stations through our MongoDB collection. You will need an borough number.
 
 @app.route('/police_stations/borough/<string:borough_nb>', methods=['GET'])
@@ -152,22 +165,6 @@ def get_hospitals_info_by_borough(borough_nb):
         # Return a 404 Not Found if no distributions are found for that borough
         return jsonify({"message": f"No hospital found for borough: {borough_nb}"}), 404
 
-
-
-
-
-# @app.route('/get_bath_by_borough', methods=['GET'])
-# def get_bath_by_borough(borough_nb):
-        
-#     bath_collection = db.products # Access your 'products' collection
-    
-#     # Find all documents in the 'products' collection
-#     # .find() returns a cursor, so you need to iterate or convert it
-#     all_products = list(products_collection.find()) 
-    
-#     # MongoDB's ObjectId is not directly JSON serializable.
-#     # dumps from bson.json_util handles this gracefully.
-#     return dumps(all_products), 200 # 200 OK status code
 
 
 # To check all available routes : go to your borwser and put "http://127.0.0.1:5000/routes"

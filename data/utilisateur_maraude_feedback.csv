@@ -7,8 +7,8 @@ uuid,datetime,borough,theme,message,user_days
 f1fa0180-a028-461e-9db8-24f08204fedf,2025-06-01T13:57:57.113901,13,maraude,Y a-t-il une distribution de repas prévue dans la semaine dans le 13e arrondissement de Paris ?,"Lundi, Jeudi"
 1aae666f-8e67-4504-8cff-6a13b9939d3c,2025-06-01T14:03:26.417963,13,maraude,Y a-t-il une distribution de repas prévue dans la semaine dans le 13e arrondissement de Paris ?,
 3872f4ef-9402-453f-80c0-f7dabfbdde98,2025-06-01T14:04:11.552334,13,maraude,Y a-t-il une distribution de repas prévue dans la semaine dans le 13e arrondissement de Paris ?,"Lundi, Jeudi"
-8a459b2d-b58e-4edc-8f43-c708f709fdd1,2025-06-01T14:31:33.626860,5,maraude,je voudrais savoir s'il y a des distributions de nourriture dans le 5ème arrondissement ?
-4f25b831-96b7-4c09-a281-c16a62bd001c,2025-06-01T14:31:43.228962,5,maraude,"Bonjour, je voudrais savoir s'il y a de quoi manger dans le 5ème arrondissement ?"
+8a459b2d-b58e-4edc-8f43-c708f709fdd1,2025-06-01T14:31:33.626860,5,maraude,je voudrais savoir s'il y a des distributions de nourriture dans le 5ème arrondissement ?,
+4f25b831-96b7-4c09-a281-c16a62bd001c,2025-06-01T14:31:43.228962,5,maraude,"Bonjour, je voudrais savoir s'il y a de quoi manger dans le 5ème arrondissement ?",
 4bf98d58-3bc2-4be6-9c08-f61b8a530160,2025-06-01T15:03:37.452516,14,maraude,Y a-t-il une distribution de repas aujourd'hui ?,"Vendredi, Mardi, Mercredi"
 8a6a5d9f-1ce3-4465-aeb2-e33b95011253,2025-06-01T15:03:37.452516,18,maraude,Je cherche de l'aide pour manger.,Lundi
 08ee2415-8253-47ad-ae9d-31c2f9d5cdb8,2025-06-01T15:03:37.453519,18,maraude,Je cherche de l'aide pour manger.,

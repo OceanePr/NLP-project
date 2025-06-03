@@ -8,6 +8,7 @@ from api.vocabulaires import (
     lemmes_vocab_maraude,
 )
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from spacy.pipeline import EntityRuler
 from pydantic import BaseModel
 import httpx  # async HTTP client : on l'utilise à la place de request pour sa propriété asynchrone (= possibilité de gérer plusieurs requêtes en même temps)
@@ -22,7 +23,7 @@ import json
 
 
 # URL de votre API Flask
-FLASK_API_BASE_URL = "http://127.0.0.1:5000" # Assurez-vous que c'est le bon port et l'adresse
+FLASK_API_BASE_URL = "http://127.0.0.1:5000" 
 
 def classify_intent(message: str):
     message = message.lower()
@@ -33,7 +34,7 @@ def classify_intent(message: str):
         return "POST"
     elif re.search(r"\b(modifier|changer|mettre à jour)\b", message):
         return "PUT"
-    elif re.search(r"\b(y a-t-il|où|quand|est-ce qu'il y a|je cherche|existe|besoin|savoir|connaitre|connaître|vérifier)\b", message):
+    elif re.search(r"\b(y a-t-il|où|quand|est-ce qu'il y a|cherche|existe|besoin|savoir|connaitre|connaître|vérifier)\b", message):
         return "GET"
     else:
         return "unknown", None
@@ -81,6 +82,24 @@ app_chatbot = FastAPI(
     title="Chatbot API pour Infrastructures contre la précarité",
     description="Une API de chatbot qui utilise le NLP pour comprendre les requêtes et interroger une API de données.",
     version="1.0.0"
+)
+
+origins = [
+    "http://localhost",
+    "http://localhost:8000", # Your FastAPI app
+    "http://127.0.0.1:8000", # Your FastAPI app
+    # If you open index.html directly from your file system (file://...)
+    # you might need to allow ALL origins for development purposes.
+    # For production, NEVER use "*" in allow_origins.
+    "*" # Allows all origins for development (BE CAREFUL IN PRODUCTION)
+]
+
+app_chatbot.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,       # List of allowed origins (e.g., your frontend URL)
+    allow_credentials=True,      # Allow cookies to be included in cross-origin requests
+    allow_methods=["*"],         # Allow all HTTP methods (GET, POST, OPTIONS, etc.)
+    allow_headers=["*"],         # Allow all headers in cross-origin requests
 )
 
 # Requête du client
@@ -206,6 +225,13 @@ async def user_text(chat: ChatRequest):
             session_data = json.load(f)
     else:
         session_data = {}
+    
+    if user_id not in session_data:
+        session_data[user_id] = {}
+    if "post_data" not in session_data[user_id]:
+        session_data[user_id]["post_data"] = {}
+    if "current_post_step" not in session_data[user_id]:
+        session_data[user_id]["current_post_step"] = None
 
     # Détection du thème (si mot-clé connu dans le vocabulaire)
     detected_theme = "inconnu"
@@ -225,26 +251,28 @@ async def user_text(chat: ChatRequest):
             detected_theme = "police"
             break
 
+    # Intent classification
+    api_method = classify_intent(user_msg)
+    print(api_method)
+    
     # Si aucun thème détecté, reprendre le dernier connu
     if detected_theme == "inconnu" and user_id in session_data and "last_theme" in session_data[user_id]:
         detected_theme = session_data[user_id]["last_theme"]
+        api_method = session_data[user_id]["last_api_method"]
+
 
     # Mise à jour du thème pour cet utilisateur
     if user_id not in session_data:
         session_data[user_id] = {}
+        
     session_data[user_id]["last_theme"] = detected_theme
+    session_data[user_id]["last_api_method"] = api_method
 
     with open(session_file, "w", encoding="utf-8") as f:
         json.dump(session_data, f, ensure_ascii=False)
 
 ############# End of user context #################################
 
-
-
-
-    # Intent classification
-    api_method = classify_intent(user_msg)
-    print(api_method)
         
     print(f"Thème détecté: {detected_theme}")
     
@@ -278,14 +306,32 @@ async def user_text(chat: ChatRequest):
    # ])
    # print("Texte nettoyé :", clean_text)
 
-    response_message = "Je n'ai pas compris votre demande. Pouvez-vous reformuler ?"    
+    #response_message = "Je n'ai pas compris votre demande. Pouvez-vous reformuler ?"    
     if not detected_borough and api_method == "GET": 
         response_message = "Je n'ai pas réussi à trouver dans quel arrondissement de Paris vous souhaitez effectuer votre recherche, pourriez-vous me le préciser s'il vous plaît ? "
         
     else : 
  ########### Subject = "maraude" // requête GET ###################
         if detected_theme == "maraude": 
+            try:
+                async with httpx.AsyncClient() as client:
+                    boroughs_response = await client.get(f"{FLASK_API_BASE_URL}/meal_distribution/available_boroughs")
+                    boroughs_response.raise_for_status()
+                    distribution_arrondissements_disponibles = boroughs_response.json()
+            except Exception as e:
+                return ChatResponse(response=f"Erreur lors de la récupération des arrondissements disponibles : {e}")
+
+
             if api_method == "GET" :
+                if detected_borough not in distribution_arrondissements_disponibles:
+                    arr_str = ', '.join([f"{a}e" for a in distribution_arrondissements_disponibles])
+                    response_message = (
+                        f"Nous sommes désolées, il n'y a pas de distribution enregistrée dans l'arrondissement n°{detected_borough}. "
+                        f"Voici les arrondissements actuellement couverts : {arr_str}. "
+                        "Veuillez indiquer un autre arrondissement parmi cette liste."
+                    )
+                    return ChatResponse(response=response_message)
+                
                 api_url = f"{FLASK_API_BASE_URL}/distributions/borough/{detected_borough}"
                 try:
                     async with httpx.AsyncClient() as client:
@@ -328,22 +374,110 @@ async def user_text(chat: ChatRequest):
  ########### Subject = "maraude" // requête POST ################### Gros doute sur l'utilité ici vu qu'on a un formulaire dédié. Il faudrait que le chatbot donne directement
  # l'url http://127.0.0.1:5000/add_distribution pour que l'utilisateur soit renvoyé vers le formulaire
 
-    #          if api_method == "POST" :
-     #           api_url = f"{FLASK_API_BASE_URL}/add_distribution"
+            if api_method == "POST" :
+                # Define the order of fields you need for add_distribution
+                REQUIRED_DISTRIBUTION_FIELDS = [
+                    ("cp", "Quel est le code postal de la distribution ?"),
+                    ("address", "Quelle est l'adresse exacte ?"),
+                    ("city", "Dans quelle ville se situe-t-elle ?"),
+                    ("schedules", "Quels sont les horaires de la distribution (ex: 18h-20h) ?"),
+                    ("day", "Quel jour de la semaine a lieu cette distribution ?"),
+                    ("organisation", "Quelle est le nom de l'organisation qui la met en place ?"),
+                    ("borough", "Dans quel arrondissement de Paris se trouve-t-elle (juste le numéro, ex: 13) ?")
+                ]
+                print(session_data)
+                current_post_step = session_data[user_id]["current_post_step"]
+                post_data = session_data[user_id]["post_data"]
 
-                # sans le formulaire, on devrait mettre un payload contenant les données récupérées via NLP.
+                # If it's a new POST request (not continuing an existing one)
+                if current_post_step is None :
+                    print("j'en ai marre",current_post_step)
+                    # Clear any old post_data and start from the first field
+                    post_data = {}
+                    session_data[user_id]["post_data"] = post_data
+                    session_data[user_id]["current_post_step"] = 0 # Start with the first field
+                    response_message = REQUIRED_DISTRIBUTION_FIELDS[0][1] # Ask the first question
+                    print(f"Starting new POST operation. Asking for: {REQUIRED_DISTRIBUTION_FIELDS[0][0]}")
 
-      #          try:
-       #             async with httpx.AsyncClient() as client:
-        #                flask_response = await client.post(api_url, data = payload)
-         #               flask_response.raise_for_status()
-                        
-          #              distributions_data = flask_response # la réponse attendue est un formulaire html donc pas de json
-           #             message = "La distribution a bien été ajoutée dans la base de données"
-            #            response_message = message
-             #   except Exception as e:
-              #      response_message = f"Une erreur inattendue est survenue lors de l'ajout : {e}"
-               #     print(f"Erreur inattendue: {e}")
+                else:
+                    # Continue the multi-turn conversation
+                    field_name, _ = REQUIRED_DISTRIBUTION_FIELDS[current_post_step] # Get name of the field just asked
+                    user_input = user_msg.strip()
+                     
+                    # Simple validation for numbers
+                    if field_name in ["cp", "borough"]:
+                        if not user_input.isdigit():
+                            response_message = f"Veuillez saisir un numéro valide pour le {field_name}. {REQUIRED_DISTRIBUTION_FIELDS[current_post_step -1][1]}"
+                            # Stay on the same step
+                            with open(session_file, "w", encoding="utf-8") as f:
+                                json.dump(session_data, f, ensure_ascii=False)
+                            return ChatResponse(response=response_message)
+                        # For borough, try to extract it from the number
+                        if field_name == "borough":
+                            post_data[field_name] = int(user_input)
+                        else:
+                            post_data[field_name] = user_input
+                    else:
+                        post_data[field_name] = user_input # Store the user's input
+
+                    session_data[user_id]["post_data"] = post_data # Update stored data
+
+                    # Move to the next step
+                    session_data[user_id]["current_post_step"] += 1
+                    print(f"Collected {field_name}: {post_data[field_name]}. Next step: {session_data[user_id]['current_post_step']}")
+
+
+                    if session_data[user_id]["current_post_step"] < len(REQUIRED_DISTRIBUTION_FIELDS):
+                        # Ask the next question
+                        next_field_name, next_question = REQUIRED_DISTRIBUTION_FIELDS[session_data[user_id]["current_post_step"]]
+                        response_message = next_question
+                        print(f"Asking for: {next_field_name}")
+                    else:
+                        # All data collected, perform the POST request
+                        print("All data collected. Attempting POST request.")
+                        api_url = f"{FLASK_API_BASE_URL}/add_distribution"
+                        payload = post_data # Use the collected data as payload
+
+                        try:
+                            async with httpx.AsyncClient() as client:
+                                # Assuming Flask API is modified to accept JSON
+                                flask_response = await client.post(api_url, json=payload)
+                                flask_response.raise_for_status()
+
+                                response_data = flask_response.json() # Flask now returns JSON
+                                message = response_data.get("message", "Distribution ajoutée avec succès !")
+                                response_message = f"Excellent ! {message}"
+
+                        except httpx.HTTPStatusError as e:
+                            response_message = f"Erreur lors de l'ajout de la distribution (HTTP {e.response.status_code}): {e.response.text}. Veuillez réessayer."
+                            print(f"HTTP Error during POST: {e.request.url} - {e.response.status_code} - {e.response.text}")
+                        except Exception as e:
+                            response_message = f"Une erreur inattendue est survenue lors de l'ajout : {e}. Veuillez réessayer."
+                            print(f"Unexpected Error during POST: {e}")
+                        finally:
+                            # Clear POST related session data after completion or error
+                            session_data[user_id]["post_data"] = {}
+                            session_data[user_id]["current_post_step"] = None
+
+                # Always save session data after each turn of POST
+                with open(session_file, "w", encoding="utf-8") as f:
+                    json.dump(session_data, f, ensure_ascii=False)
+
+                return ChatResponse(response=response_message)
+   
+            #     api_url = f"{FLASK_API_BASE_URL}/add_distribution"
+
+            # try:
+            #     async with httpx.AsyncClient() as client:
+            #         flask_response = await client.post(api_url, data = payload)
+            #         flask_response.raise_for_status()
+                    
+            #         distributions_data = flask_response # la réponse attendue est un formulaire html donc pas de json
+            #         message = "La distribution a bien été ajoutée dans la base de données"
+            #         response_message = message
+            # except Exception as e:
+            #     response_message = f"Une erreur inattendue est survenue lors de l'ajout : {e}"
+            #     print(f"Erreur inattendue: {e}")
 
 
 ######### Subject = "Police station" // requête GET ############
