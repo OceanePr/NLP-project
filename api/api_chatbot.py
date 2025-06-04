@@ -65,11 +65,9 @@ def make_sentence_for_shower(doc):
     return sentence
 
 def make_sentence_for_police_station(pol):
-    adresse = pol.get("Adresse", "Adresse inconnue")
-    organisation = pol.get("Organisation", "Etablissement inconnu")
-    jour = pol.get("Jour", "Jour non précisé")
-    horaires = pol.get("Horaires", "Horaires non précisés")
-    sentence = f"- Orgnisation : {organisation}, adresse : {adresse}, jour : {jour}, horaires : {horaires}"
+    name = pol.get("Nom", "Pas de nom")
+    address = pol.get("ADRESSE", "Adresse inconnue")
+    sentence = f"- Nom : {name}, adresse : {address}"
     return sentence
 
 
@@ -345,6 +343,7 @@ async def user_text(chat: ChatRequest):
                         message = f"Voici les distributions de repas organisées dans l'arrondissement n°{detected_borough}: \n" + final_sentence
                         response_message = message
                         response_message += "\nAfin d'aider les associations à organiser leurs stocks, pourriez-vous nous dire s'il y a un ou plusieurs jours de la semaine où vous vous rendez généralement aux maraudes dans cet arrondissement ?"
+
 
                         feedback_file = "data/utilisateur_maraude_feedback.csv"
                         feedback_entry = {

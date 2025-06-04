@@ -63,6 +63,7 @@ lemmes_vocab_medical = [
     "inférieur",
     "ischémique",
     "maladie",
+    "malade",
     "membre",
     "médullaire",
     "organe",
@@ -82,6 +83,7 @@ lemmes_vocab_medical = [
 
 lemmes_vocab_police = [
     "appréhendé",
+    "agression", 
     "armer",
     "bourriqu",
     "brigadier",
@@ -117,6 +119,7 @@ lemmes_vocab_police = [
     "szczecin",
     "trousse",
     "ville",
+    "commissariat"
 ]
 
 lemmes_vocab_douche = ['douche', 'laver', 'nettoyer']

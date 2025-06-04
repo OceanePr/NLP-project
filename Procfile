@@ -1,0 +1,1 @@
+web: uvicorn api.api_chatbot:app_chatbot --host 0.0.0.0 --port $PORT
