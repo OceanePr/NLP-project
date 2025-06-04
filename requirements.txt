@@ -29,3 +29,4 @@ selenium
 webdriver-manager
 os
 json
+matplotlib
