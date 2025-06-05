@@ -73,4 +73,6 @@ matplotlib
 wrapt==1.17.2
 gunicorn
 webdriver-manager==3.8.6
+fastapi
+uvicorn
 
