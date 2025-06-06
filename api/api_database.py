@@ -5,12 +5,14 @@ from flask import Flask, render_template
 from flask import Flask, request, jsonify
 from bson.json_util import dumps
 from flask_pymongo import PyMongo
+import os
 
 
 app = Flask(__name__)
 
 # Just an example using sql alchemy, but i will try to use mongoDB instead
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/infrastructures_precarite'
+# app.config['MONGO_URI'] = 'mongodb://localhost:27017/infrastructures_precarite' (en local)
+app.config['MONGO_URI'] = os.environ.get("MONGO_URI") # avec déploiement
 db = PyMongo(app)
 
 
