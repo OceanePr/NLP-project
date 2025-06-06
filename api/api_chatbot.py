@@ -23,7 +23,9 @@ import json
 
 
 # URL de votre API Flask
-FLASK_API_BASE_URL = "http://127.0.0.1:5000" 
+# FLASK_API_BASE_URL = "http://127.0.0.1:5000"  (en local)
+FLASK_API_BASE_URL = "https://nlp-database-webservice.onrender.com"  # (api déployée)
+
 
 def classify_intent(message: str):
     message = message.lower()
