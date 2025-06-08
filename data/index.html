@@ -25,7 +25,8 @@
     </div>
 
     <script>
-        const chatApiUrl = "http://127.0.0.1:8000/chat";
+        // const chatApiUrl = "http://127.0.0.1:8000/chat"; (version en local)
+        const chatApiUrl = "https://nlp-chatbot-webservice.onrender.com/chat";   // version API déployée
         const messagesDiv = document.getElementById("messages");
         const userInput = document.getElementById("user-input");
         let currentSessionId = null; // To keep track of the conversation session
